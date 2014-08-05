@@ -2,10 +2,11 @@ from datetime import *
 import requests
 
 import ticks.util as util
+from ticks.celery import app
 
 import os
-
 import code
+import redis
 
 class Downloader(object):
   FEEDS = [
@@ -43,15 +44,19 @@ class Downloader(object):
         hour = str(time.hour).rjust(2, '0')
       )
 
-      print tick_path
-
       out_path = "tick_data/" + tick_path
       if not os.path.exists(out_path):
-        tick_request = requests.get(self.base_url + tick_path)
-        # code.interact(local=locals())
+        print tick_path
         if not os.path.exists(os.path.dirname(out_path)):
           os.makedirs(os.path.dirname(out_path))
+        download_tick.delay(tick_path)
 
-        data_file = open(out_path, "wb+")
-        data_file.write(tick_request.content)
-        data_file.close()
+
+@app.task(ignore_result=True, acks_late=True, timeout=30, soft_timeout=10)
+def download_tick(tick_path):
+  out_path = "tick_data/" + tick_path
+  tick_url = "http://www.dukascopy.com/datafeed/" + tick_path
+  tick_request = requests.get(tick_url)
+  data_file = open(out_path, "wb+")
+  data_file.write(tick_request.content)
+  data_file.close()

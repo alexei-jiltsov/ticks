@@ -14,6 +14,7 @@ setup(
     entry_points = {
       'console_scripts': [
         'ticks = ticks:main',
+        'ticks_worker = ticks.worker:main',
         'idle = idlelib.PyShell:main'
       ]
     }

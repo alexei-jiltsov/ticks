@@ -7,5 +7,4 @@ celery==3.1.13
 kombu==3.0.21
 pytz==2014.4
 requests==2.3.0
-ticks==0.0.1
 wsgiref==0.1.2
