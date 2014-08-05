@@ -4,10 +4,6 @@ import requests
 import ticks.util as util
 from ticks.celery import app
 
-import os
-import code
-import redis
-
 class Downloader(object):
   FEEDS = [
     'AUDUSD',
